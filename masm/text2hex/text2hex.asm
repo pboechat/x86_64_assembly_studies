@@ -18,11 +18,11 @@ main                    proc
                         call                open_stdout
                         call                open_stdin
 begin_iter:             print_string        start_msg
-                        lea                 rcx,user_input
+                        mov                 rcx,offset user_input
                         mov                 rdx,lengthof user_input
                         call                read_string
                         mov                 read_string_length,rax
-                        lea                 r12,user_input
+                        mov                 r12,offset user_input
                         mov                 r13,read_string_length
                         sub                 r13,2
                         je                  end_iter

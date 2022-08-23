@@ -33,7 +33,7 @@ write_string            proc
                         mov                 r8,rdx                                  ; moves buffer length to r8
                         mov                 rdx,rcx                                 ; moves buffer address to rdx
                         mov                 rcx,stdout
-                        lea                 r9,num_bytes_written
+                        mov                 r9,offset num_bytes_written
                         call                WriteConsoleA
                         mov                 rax,num_bytes_read
                         ret
@@ -52,26 +52,24 @@ write_char              endp
 ;   Output: rax (number of bytes written)
 ;   Registers used: rcx, rdx, r8, r9 and rax
 write_char_ascii        proc
-                        lea                 rdx,ascii_code_string
                         mov                 dl,[rcx]
                         movzx               ax,dl
                         mov                 cl,100
                         div                 cl
                         add                 al,'0'
-                        mov                 [rdx],al
+                        mov                 [ascii_code_string],al
                         mov                 al,ah
                         xor                 ah,ah
                         mov                 cl,10
                         div                 cl
                         add                 al,'0'
-                        mov                 [rdx+1],al
+                        mov                 [ascii_code_string+1],al
                         mov                 al,ah
                         add                 al,'0'
-                        mov                 [rdx+2],al
-                        lea                 rcx,ascii_code_string
+                        mov                 [ascii_code_string+2],al
+                        mov                 rcx,offset ascii_code_string
                         mov                 rdx,lengthof ascii_code_string
                         call                write_string
-                        pop                 rdi
                         ret
 write_char_ascii        endp
 ;   Writes the binary equivalent of a char to stdout
@@ -81,7 +79,7 @@ write_char_ascii        endp
 write_char_bin          proc
                         push                rdi
                         mov                 dl,[rcx]
-                        lea                 rdi,binary_string
+                        mov                 rdi,offset binary_string
                         cld
                         mov                 cl,7
 write_char_bin_lp_1:    mov                 al,dl
@@ -91,7 +89,7 @@ write_char_bin_lp_1:    mov                 al,dl
                         stosb
                         dec                 cl
                         jge                 write_char_bin_lp_1
-                        lea                 rcx,binary_string
+                        mov                 rcx,offset binary_string
                         mov                 rdx,lengthof binary_string
                         call                write_string
                         pop                 rdi
@@ -103,16 +101,16 @@ write_char_bin          endp
 ;   Registers used: rcx, rdx, r8, r9 and rax
 write_char_hex          proc
                         push                rbx
-                        lea                 rbx,hex_char_table
+                        mov                 rbx,offset hex_char_table
                         mov                 al,[rcx]
                         shr                 al,4
                         xlat
                         mov                 [hex_string+2],al
                         mov                 al,[rcx]
-                        and                 al,0ffh
+                        and                 al,1111b
                         xlat
                         mov                 [hex_string+3],al
-                        lea                 rcx,hex_string
+                        mov                 rcx,offset hex_string
                         mov                 rdx,lengthof hex_string
                         call                write_string
                         pop                 rbx
@@ -126,7 +124,7 @@ read_string             proc
                         mov                 r8,rdx
                         mov                 rdx,rcx
                         mov                 rcx,stdin
-                        lea                 r9,num_bytes_read
+                        mov                 r9,offset num_bytes_read
                         call                ReadConsoleA
                         mov                 rax,num_bytes_read
                         ret
@@ -137,7 +135,7 @@ stdin                   qword               ?
 num_bytes_written       qword               ?
 num_bytes_read          qword               ?
 ascii_code_string       byte                3 dup(?)
-hex_string              byte                '0','x',2 dup(?)
+hex_string              byte                '0','x',?,?
 binary_string           byte                8 dup(?)
 hex_char_table          byte                "0123456789ABCDEF"
                         end

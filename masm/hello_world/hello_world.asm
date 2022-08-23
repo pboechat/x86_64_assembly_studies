@@ -7,7 +7,7 @@ ExitProcess             proto
 main                    proc
                         sub                 rsp,40
                         call                open_stdout
-                        lea                 rcx,message
+                        mov                 rcx,offset message
                         mov                 rdx,lengthof message
                         call                write_string
                         add                 rsp,40
