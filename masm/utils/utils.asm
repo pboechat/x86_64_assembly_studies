@@ -52,24 +52,22 @@ write_char              endp
 ;   Output: rax (number of bytes written)
 ;   Registers used: rcx, rdx, r8, r9 and rax
 write_char_ascii        proc
-                        push                rdi
+                        lea                 rdx,ascii_code_string
                         mov                 dl,[rcx]
-                        lea                 rdi,ascii_code_string
-                        cld
                         movzx               ax,dl
                         mov                 cl,100
                         div                 cl
                         add                 al,'0'
-                        stosb
+                        mov                 [rdx],al
                         mov                 al,ah
                         xor                 ah,ah
                         mov                 cl,10
                         div                 cl
                         add                 al,'0'
-                        stosb
+                        mov                 [rdx+1],al
                         mov                 al,ah
                         add                 al,'0'
-                        stosb
+                        mov                 [rdx+2],al
                         lea                 rcx,ascii_code_string
                         mov                 rdx,lengthof ascii_code_string
                         call                write_string
@@ -99,6 +97,27 @@ write_char_bin_lp_1:    mov                 al,dl
                         pop                 rdi
                         ret
 write_char_bin          endp
+;   Writes the hex equivalent of a char to stdout
+;   Input: rcx (char address)
+;   Output: rax (number of bytes written)
+;   Registers used: rcx, rdx, r8, r9 and rax
+write_char_hex          proc
+                        push                rbx
+                        lea                 rbx,hex_char_table
+                        mov                 al,[rcx]
+                        shr                 al,4
+                        xlat
+                        mov                 [hex_string+2],al
+                        mov                 al,[rcx]
+                        and                 al,0ffh
+                        xlat
+                        mov                 [hex_string+3],al
+                        lea                 rcx,hex_string
+                        mov                 rdx,lengthof hex_string
+                        call                write_string
+                        pop                 rbx
+                        ret
+write_char_hex          endp
 ;   Reads a string from stdin
 ;   Input: rcx (buffer address), rdx (buffer length)
 ;   Output: rax (number of bytes read)
@@ -118,5 +137,7 @@ stdin                   qword               ?
 num_bytes_written       qword               ?
 num_bytes_read          qword               ?
 ascii_code_string       byte                3 dup(?)
+hex_string              byte                '0','x',2 dup(?)
 binary_string           byte                8 dup(?)
+hex_char_table          byte                "0123456789ABCDEF"
                         end
