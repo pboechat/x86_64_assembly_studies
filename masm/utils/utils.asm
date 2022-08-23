@@ -1,122 +1,122 @@
-                        includelib      kernel32.lib
+                        includelib          kernel32.lib
 GetStdHandle            proto
 WriteConsoleA           proto
 ReadConsoleA            proto
-keyboard                equ             -10
-console                 equ             -11
+keyboard                equ                 -10
+console                 equ                 -11
                         .code
 ;   Acquires stdout handle
 ;   Input: none
 ;   Output: none
-;   Registers used: RCX, RAX
+;   Registers used: rcx, rax
 open_stdout             proc
-                        mov             RCX,console
-                        call            GetStdHandle
-                        mov             stdout,RAX
+                        mov                 rcx,console
+                        call                GetStdHandle
+                        mov                 stdout,rax
                         ret
 open_stdout             endp
 ;   Acquires stdin handle
 ;   Input: none
 ;   Output: none
-;   Registers used: RCX, RAX
+;   Registers used: rcx, rax
 open_stdin              proc
-                        mov             RCX,keyboard
-                        call            GetStdHandle
-                        mov             stdin,RAX
+                        mov                 rcx,keyboard
+                        call                GetStdHandle
+                        mov                 stdin,rax
                         ret
 open_stdin              endp
 ;   Writes a string to stdout
-;   Input: RCX (buffer address), RDX (buffer length)
-;   Output: RAX (number of bytes written)
-;   Registers used: RCX, RDX, R8, R9 and RAX
+;   Input: rcx (buffer address), rdx (buffer length)
+;   Output: rax (number of bytes written)
+;   Registers used: rcx, rdx, r8, r9 and rax
 write_string            proc
-                        mov             R8,RDX                                      ; moves buffer length to R8
-                        mov             RDX,RCX                                     ; moves buffer address to RDX
-                        mov             RCX,stdout
-                        lea             R9,num_bytes_written
-                        call            WriteConsoleA
-                        mov             RAX,num_bytes_read
+                        mov                 r8,rdx                                  ; moves buffer length to r8
+                        mov                 rdx,rcx                                 ; moves buffer address to rdx
+                        mov                 rcx,stdout
+                        lea                 r9,num_bytes_written
+                        call                WriteConsoleA
+                        mov                 rax,num_bytes_read
                         ret
 write_string            endp
 ;   Writes a char to stdout
-;   Input: RCX (char address)
-;   Output: RAX (number of bytes written)
-;   Registers used: RCX, RDX, R8, R9 and RAX
+;   Input: rcx (char address)
+;   Output: rax (number of bytes written)
+;   Registers used: rcx, rdx, r8, r9 and rax
 write_char              proc
-                        mov             RDX,1
-                        call            write_string
+                        mov                 rdx,1
+                        call                write_string
                         ret
 write_char              endp
 ;   Writes the ASCII code of a char to stdout
-;   Input: RCX (char address)
-;   Output: RAX (number of bytes written)
-;   Registers used: RCX, RDX, R8, R9 and RAX
+;   Input: rcx (char address)
+;   Output: rax (number of bytes written)
+;   Registers used: rcx, rdx, r8, r9 and rax
 write_char_ascii        proc
-                        push                RDI
-                        mov                 DL,[RCX]
-                        lea                 RDI,ascii_code_string
+                        push                rdi
+                        mov                 dl,[rcx]
+                        lea                 rdi,ascii_code_string
                         cld
-                        movzx               AX,DL
-                        mov                 CL,100
-                        div                 CL
-                        add                 AL,'0'
+                        movzx               ax,dl
+                        mov                 cl,100
+                        div                 cl
+                        add                 al,'0'
                         stosb
-                        mov                 AL,AH
-                        xor                 AH,AH
-                        mov                 CL,10
-                        div                 CL
-                        add                 AL,'0'
+                        mov                 al,ah
+                        xor                 ah,ah
+                        mov                 cl,10
+                        div                 cl
+                        add                 al,'0'
                         stosb
-                        mov                 AL,AH
-                        add                 AL,'0'
+                        mov                 al,ah
+                        add                 al,'0'
                         stosb
-                        lea                 RCX,ascii_code_string
-                        mov                 RDX,lengthof ascii_code_string
+                        lea                 rcx,ascii_code_string
+                        mov                 rdx,lengthof ascii_code_string
                         call                write_string
-                        pop                 RDI
+                        pop                 rdi
                         ret
 write_char_ascii        endp
 ;   Writes the binary equivalent of a char to stdout
-;   Input: RCX (char address)
-;   Output: RAX (number of bytes written)
-;   Registers used: RCX, RDX, R8, R9 and RAX
+;   Input: rcx (char address)
+;   Output: rax (number of bytes written)
+;   Registers used: rcx, rdx, r8, r9 and rax
 write_char_bin          proc
-                        push                RDI
-                        mov                 DL,[RCX]
-                        lea                 RDI,binary_string
+                        push                rdi
+                        mov                 dl,[rcx]
+                        lea                 rdi,binary_string
                         cld
-                        mov                 CL,7
-write_char_bin_lp_1:    mov                 AL,DL
-                        shr                 AL,CL
-                        and                 AL,1
-                        add                 AL,'0'
+                        mov                 cl,7
+write_char_bin_lp_1:    mov                 al,dl
+                        shr                 al,cl
+                        and                 al,1
+                        add                 al,'0'
                         stosb
-                        dec                 CL
+                        dec                 cl
                         jge                 write_char_bin_lp_1
-                        lea                 RCX,binary_string
-                        mov                 RDX,lengthof binary_string
+                        lea                 rcx,binary_string
+                        mov                 rdx,lengthof binary_string
                         call                write_string
-                        pop                 RDI
+                        pop                 rdi
                         ret
 write_char_bin          endp
 ;   Reads a string from stdin
-;   Input: RCX (buffer address), RDX (buffer length)
-;   Output: RAX (number of bytes read)
-;   Registers used: RCX, RDX, R8, R9 and RAX
+;   Input: rcx (buffer address), rdx (buffer length)
+;   Output: rax (number of bytes read)
+;   Registers used: rcx, rdx, r8, r9 and rax
 read_string             proc
-                        mov                 R8,RDX
-                        mov                 RDX,RCX
-                        mov                 RCX,stdin
-                        lea                 R9,num_bytes_read
+                        mov                 r8,rdx
+                        mov                 rdx,rcx
+                        mov                 rcx,stdin
+                        lea                 r9,num_bytes_read
                         call                ReadConsoleA
-                        mov                 RAX,num_bytes_read
+                        mov                 rax,num_bytes_read
                         ret
 read_string             endp
                         .data
-stdout                  qword           ?
-stdin                   qword           ?
-num_bytes_written       qword           ?
-num_bytes_read          qword           ?
-ascii_code_string       byte            3 DUP(?)
-binary_string           byte            8 DUP(?)
+stdout                  qword               ?
+stdin                   qword               ?
+num_bytes_written       qword               ?
+num_bytes_read          qword               ?
+ascii_code_string       byte                3 dup(?)
+binary_string           byte                8 dup(?)
                         end

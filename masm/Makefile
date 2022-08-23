@@ -19,7 +19,7 @@ LINKFLAGS=/SUBSYSTEM:CONSOLE /LIBPATH:"$(WIN64_LIBPATH)" /LIBPATH:"$(ROOT)utils"
 
 hello_world: \
 	utils/utils.library \
-	hello_world/main.executable
+	hello_world/hello_world.executable
 
 text2ascii: \
 	utils/utils.library \

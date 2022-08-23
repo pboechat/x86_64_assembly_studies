@@ -8,42 +8,42 @@ write_char_bin          proto
 read_string             proto
 ExitProcess             proto
 print_string            macro               msg
-                        lea                 RCX,msg
-                        mov                 RDX,lengthof msg
+                        lea                 rcx,msg
+                        mov                 rdx,lengthof msg
                         call                write_string
                         endm
                         .code
 main                    proc
-                        sub                 RSP,40
+                        sub                 rsp,40
                         call                open_stdout
                         call                open_stdin
-begin_iter:              print_string        start_msg
-                        lea                 RCX,user_input
-                        mov                 RDX,lengthof user_input
+begin_iter:             print_string        start_msg
+                        lea                 rcx,user_input
+                        mov                 rdx,lengthof user_input
                         call                read_string
-                        mov                 read_string_length,RAX
-                        lea                 R12,user_input
-                        mov                 R13,read_string_length
-                        sub                 R13,2
+                        mov                 read_string_length,rax
+                        lea                 r12,user_input
+                        mov                 r13,read_string_length
+                        sub                 r13,2
                         je                  end_iter
-in_loop:                mov                 RCX,R12
+in_loop:                mov                 rcx,r12
                         call                write_char_bin
                         print_string        tab
-                        mov                 RCX,R12
+                        mov                 rcx,r12
                         call                write_char
                         print_string        new_line
-                        inc                 R12
-                        dec                 R13
+                        inc                 r12
+                        dec                 r13
                         jg                  in_loop
                         jp                  begin_iter
-end_iter:               add                 RSP,40
-                        mov                 RCX,0
+end_iter:               add                 rsp,40
+                        mov                 rcx,0
                         call                ExitProcess
 main                    endp
                         .data
 read_string_length      qword               ?
 start_msg               byte                "Please enter text message: "
-user_input              byte                128 DUP(?)
-new_line                byte                0DH,0AH
-tab                     byte                09H
+user_input              byte                128 dup(?)
+new_line                byte                0dh,0ah
+tab                     byte                09h
                         end
