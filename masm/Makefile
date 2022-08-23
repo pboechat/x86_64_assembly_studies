@@ -2,10 +2,11 @@ ML=ml64
 LIB=lib
 LINK=link
 WIN64_LIBPATH=C:\Program Files (x86)\Windows Kits\10\Lib\10.0.18362.0\um\x64
-ROOT_TOKENS=$(subst /, ,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
-ROOT=$(firstword $(ROOT_TOKENS)):\$(subst ,\,$(wordlist 2,$(words $(ROOT_TOKENS)),$(ROOT_TOKENS)))
+_=$() $()
+ROOT_TOKENS=$(subst /,$(_),$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+ROOT=$(firstword $(ROOT_TOKENS)):\$(subst $(_),\,$(wordlist 2,$(words $(ROOT_TOKENS)),$(ROOT_TOKENS)))
 
-LINKFLAGS=/SUBSYSTEM:CONSOLE /LIBPATH:"$(WIN64_LIBPATH)" /LIBPATH:"$(ROOT)utils"
+LINKFLAGS=/SUBSYSTEM:CONSOLE /LIBPATH:"$(WIN64_LIBPATH)" /LIBPATH:"$(ROOT)\utils"
 
 %.library:
 	cd $(*D); \
@@ -29,7 +30,12 @@ text2bin: \
 	utils/utils.library \
 	text2bin/text2bin.executable
 
+text2hex: \
+	utils/utils.library \
+	text2hex/text2hex.executable
+
 all: \
 	hello_world \
 	text2ascii \
-	text2bin
+	text2bin \
+	text2hex
