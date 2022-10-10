@@ -6,7 +6,14 @@ _=$() $()
 ROOT_TOKENS=$(subst /,$(_),$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 ROOT=$(firstword $(ROOT_TOKENS)):\$(subst $(_),\,$(wordlist 2,$(words $(ROOT_TOKENS)),$(ROOT_TOKENS)))
 
-LINKFLAGS=/SUBSYSTEM:CONSOLE /LIBPATH:"$(WIN64_LIBPATH)" /LIBPATH:"$(ROOT)\utils"
+# Enable debug symbols
+# DEBUG=1
+
+ifeq ($(DEBUG),1)
+	LINKFLAGS=/SUBSYSTEM:CONSOLE /DEBUG:FULL /LIBPATH:"$(WIN64_LIBPATH)" /LIBPATH:"$(ROOT)\utils"
+else
+	LINKFLAGS=/SUBSYSTEM:CONSOLE /LIBPATH:"$(WIN64_LIBPATH)" /LIBPATH:"$(ROOT)\utils"
+endif
 
 %.library:
 	cd $(*D); \
